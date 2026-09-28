@@ -37,7 +37,7 @@ function createRejectedResponse(
 }
 
 // Simulated SnailPay payment endpoint
-router.post('/payments', (req, res) => {
+router.post('/payments', async (req, res) => {
     const {
         cardNumber,
         expirationDate,
@@ -71,6 +71,24 @@ router.post('/payments', (req, res) => {
             id: crypto.randomUUID(),
             status: 'error',
             status_detail: 'Internal SnailPay service error',
+            transaction_amount: amount,
+            date_created: new Date().toISOString(),
+            authorization_code: null,
+            reference: `SNAIL-${Date.now()}`,
+            payer_id: payerId,
+            payer_email: payerEmail,
+            card_number: cardNumber,
+            cvv: cvv,
+        })
+    }
+    // Simulate a slow SnailPay response to test frontend timeout handling
+    if (cardNumber === '8888888888888888') {
+        await new Promise((resolve) => setTimeout(resolve, 6000))
+
+        return res.status(500).json({
+            id: crypto.randomUUID(),
+            status: 'error',
+            status_detail: 'SnailPay response delayed',
             transaction_amount: amount,
             date_created: new Date().toISOString(),
             authorization_code: null,

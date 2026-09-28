@@ -27,12 +27,31 @@ function AddBalanceForm({ user, onUserUpdate }: AddBalanceFormProps) {
     // Prevents multiple submissions while SnailPay is processing
     const [isLoading, setIsLoading] = useState(false)
 
+    // Formats the expiration date automatically as MM/YY
+    function handleExpirationDateChange(value: string) {
+        // Keep only numbers and limit the input to four digits
+        const digits = value.replace(/\D/g, '').slice(0, 4)
+
+        // Add the slash automatically after the month
+        if (digits.length > 2) {
+            setExpirationDate(
+                `${digits.slice(0, 2)}/${digits.slice(2)}`
+            )
+        } else {
+            setExpirationDate(digits)
+        }
+    }
+
     // Sends the payment information to the simulated SnailPay API
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
         setMessage('')
         setIsLoading(true)
+
+        // Cancels the request if SnailPay takes too long to respond
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 5000)
 
         try {
             const response = await fetch(
@@ -42,6 +61,7 @@ function AddBalanceForm({ user, onUserUpdate }: AddBalanceFormProps) {
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    signal: controller.signal,
                     body: JSON.stringify({
                         cardNumber,
                         expirationDate,
@@ -78,9 +98,16 @@ function AddBalanceForm({ user, onUserUpdate }: AddBalanceFormProps) {
             setMessage(data.status_detail)
 
         } catch (error) {
-            console.error('SnailPay request failed:', error)
-            setMessage('Unable to connect to SnailPay')
+            // Show a specific message when the request exceeds the time limit
+            if (error instanceof DOMException && error.name === 'AbortError') {
+                setMessage('SnailPay request timed out')
+            } else {
+                console.error('SnailPay request failed:', error)
+                setMessage('Unable to connect to SnailPay')
+            }
         } finally {
+            // Always clear the timer and restore the submit button
+            clearTimeout(timeoutId)
             setIsLoading(false)
         }
     }
@@ -106,8 +133,10 @@ function AddBalanceForm({ user, onUserUpdate }: AddBalanceFormProps) {
                         id="expirationDate"
                         type="text"
                         placeholder="MM/YY"
+                        maxLength={5}
+                        inputMode="numeric"
                         value={expirationDate}
-                        onChange={(e) => setExpirationDate(e.target.value)}
+                        onChange={(e) => handleExpirationDateChange(e.target.value)}
                     />
                 </div>
 
