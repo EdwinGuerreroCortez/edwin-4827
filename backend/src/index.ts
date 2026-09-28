@@ -1,10 +1,14 @@
 import express from 'express';
-
+import snailPayRouter from './routes/snailPay.js'
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+// Routes for the simulated SnailPay service
+app.use('/api/snailpay', snailPayRouter)
 
+// Routes for the simulated SnailPay service
+app.use('/api/snailpay', snailPayRouter)
 app.get('/', (_req, res) => {
     res.json({
         message: 'API running successfully',
