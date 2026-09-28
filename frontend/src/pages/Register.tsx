@@ -1,9 +1,15 @@
 import { useState } from 'react'
 import { hashPassword } from '../utils/password'
-import { findUserByEmail, saveUser } from '../utils/storage'
+import { findUserByEmail, saveUser, setCurrentUser } from '../utils/storage'
 import type { User } from '../types/User'
 
-function Register() {
+// Props used to notify App after registration or return to Login
+interface RegisterProps {
+    onRegister: (user: User) => void
+    onGoToLogin: () => void
+}
+
+function Register({ onRegister, onGoToLogin }: RegisterProps) {
     const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -82,8 +88,14 @@ function Register() {
             balance: 0,
         }
 
-        // Save the user in LocalStorage
+        // Save the new user
         saveUser(newUser)
+
+        // Start a session automatically after registration
+        setCurrentUser(newUser.id)
+
+        // Notify App that registration was successful
+        onRegister(newUser)
 
         console.log('User registered successfully')
     }
@@ -133,7 +145,20 @@ function Register() {
                 </div>
 
                 {error && <p>{error}</p>}
-                <button type="submit">Create account</button>            </form>
+                <button type="submit">Create account</button>
+                <p>
+                    Already have an account?{' '}
+                    <a
+                        href="#login"
+                        onClick={(event) => {
+                            event.preventDefault()
+                            onGoToLogin()
+                        }}
+                    >
+                        Login
+                    </a>
+                </p>
+            </form>
         </main>
     )
 }
