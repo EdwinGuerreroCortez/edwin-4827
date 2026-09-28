@@ -1,4 +1,5 @@
 import type { User } from '../types/User'
+import type { SnailPayResponse } from '../types/SnailPay'
 
 const USERS_KEY = 'users'
 const CURRENT_USER_KEY = 'currentUserId'
@@ -45,4 +46,44 @@ export function getCurrentUser(): User | undefined {
 
 export function clearCurrentUser(): void {
     localStorage.removeItem(CURRENT_USER_KEY)
+}
+
+// Updates the balance of an existing user
+export function updateUserBalance(
+    userId: string,
+    newBalance: number
+): User | undefined {
+    const users = getUsers()
+    const userIndex = users.findIndex((user) => user.id === userId)
+
+    if (userIndex === -1) {
+        return undefined
+    }
+
+    users[userIndex].balance = newBalance
+    localStorage.setItem(USERS_KEY, JSON.stringify(users))
+
+    return users[userIndex]
+}
+
+const SNAILPAY_TRANSACTIONS_KEY = 'snailPayTransactions'
+
+// Stores simulated SnailPay responses in LocalStorage
+export function saveSnailPayTransaction(
+    transaction: SnailPayResponse
+): void {
+    const storedTransactions = localStorage.getItem(
+        SNAILPAY_TRANSACTIONS_KEY
+    )
+
+    const transactions: SnailPayResponse[] = storedTransactions
+        ? JSON.parse(storedTransactions)
+        : []
+
+    transactions.push(transaction)
+
+    localStorage.setItem(
+        SNAILPAY_TRANSACTIONS_KEY,
+        JSON.stringify(transactions)
+    )
 }

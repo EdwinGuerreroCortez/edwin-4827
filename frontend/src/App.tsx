@@ -24,12 +24,18 @@ function App() {
     setAuthView('login')
   }
 
+  // Updates the user state when account information changes
+  const handleUserUpdate = (updatedUser: User) => {
+    setCurrentUser(updatedUser)
+  }
+
   // If a user is logged in, show the Dashboard
   if (currentUser) {
     return (
       <Dashboard
         user={currentUser}
         onLogout={handleLogout}
+        onUserUpdate={handleUserUpdate}
       />
     )
   }

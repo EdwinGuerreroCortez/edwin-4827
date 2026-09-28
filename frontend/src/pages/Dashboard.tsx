@@ -13,18 +13,27 @@ import {
 } from 'recharts'
 
 import { betResults, snailWins } from '../data/dashboardData'
+import AddBalanceForm from '../components/AddBalanceForm'
 
 interface DashboardProps {
     user: User
     onLogout: () => void
+    onUserUpdate: (updatedUser: User) => void
+
 }
 
-function Dashboard({ user, onLogout }: DashboardProps) {
+function Dashboard({ user, onLogout, onUserUpdate }: DashboardProps) {
     return (
         <main>
             <h1>Welcome, {user.fullName}</h1>
 
             <p>Balance: ${user.balance}</p>
+
+            {/* Form used to add balance through the simulated SnailPay service */}
+            <AddBalanceForm
+                user={user}
+                onUserUpdate={onUserUpdate}
+            />
             {/* Donut chart with simulated won and lost bets */}
             <section>
                 <h2>Bet Results</h2>
