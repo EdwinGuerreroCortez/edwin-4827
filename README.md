@@ -21,6 +21,7 @@ El proyecto fue desarrollado utilizando React, Express y TypeScript.
 - Manejo de timeout en las solicitudes.
 - Persistencia de las respuestas de SnailPay en LocalStorage.
 - Pruebas automatizadas del API.
+- Despliegue público del frontend y backend.
 
 ## Tecnologías utilizadas
 
@@ -327,6 +328,36 @@ La interfaz fue diseñada para adaptarse a diferentes tamaños de pantalla, incl
 Se utilizó Material UI como librería de componentes y sistema visual, junto con un tema personalizado para mantener consistencia en colores, tipografía, componentes y estados de interacción.
 
 Para las gráficas del dashboard se utilizó Recharts.
+
+## Aplicación desplegada
+
+La aplicación se encuentra disponible públicamente para su revisión.
+
+### Frontend
+
+El frontend fue desplegado utilizando Vercel:
+
+https://edwin-4827.vercel.app
+
+### Backend
+
+El API de SnailPay fue desplegado utilizando Render:
+
+https://edwin-4827-api.onrender.com
+
+El frontend utiliza la variable de entorno `VITE_API_URL` para conectarse con el backend desplegado.
+
+El backend utiliza la variable `FRONTEND_URL` para permitir mediante CORS las solicitudes provenientes del frontend.
+
+### Consideraciones del despliegue
+
+El backend utiliza el plan gratuito de Render. Después de un periodo de inactividad, el servicio puede entrar en suspensión temporal.
+
+Debido a esto, la primera solicitud después de un periodo de inactividad puede tardar más tiempo mientras el servicio vuelve a iniciar. En este caso, el timeout configurado en el frontend podría finalizar la primera solicitud antes de que el backend responda.
+
+Una vez que el servicio se encuentra activo, las siguientes solicitudes funcionan normalmente.
+
+La aplicación puede revisarse directamente desde la URL pública del frontend sin requerir credenciales adicionales de Vercel o Render.
 
 ## Consideraciones
 
