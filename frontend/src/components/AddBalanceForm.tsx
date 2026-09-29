@@ -75,6 +75,10 @@ function AddBalanceForm({ user, onUserUpdate }: AddBalanceFormProps) {
         setCvv(digits)
     }
 
+    // Base URL of the SnailPay API.
+    // Uses the local backend during development when no environment variable is provided.
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
     // Sends the payment information to the simulated SnailPay API
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -89,7 +93,7 @@ function AddBalanceForm({ user, onUserUpdate }: AddBalanceFormProps) {
 
         try {
             const response = await fetch(
-                'http://localhost:3000/api/snailpay/payments',
+                `${API_URL}/api/snailpay/payments`,
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

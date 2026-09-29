@@ -4,9 +4,14 @@ import snailPayRouter from './routes/snailPay.js'
 
 const app = express()
 
-// Allows the frontend development server to communicate with the API
+// Frontend URLs allowed to communicate with the API
+const allowedOrigins = [
+    'http://localhost:5173',
+    process.env.FRONTEND_URL,
+].filter((origin): origin is string => Boolean(origin))
+
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: allowedOrigins,
 }))
 
 // Allows the API to receive JSON request bodies
